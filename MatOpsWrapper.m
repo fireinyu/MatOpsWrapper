@@ -32,7 +32,8 @@ classdef MatOpsWrapper < handle
                 oprStr = obj.mat;
             else
                 operation.apply(obj.aug);
-                oprStr = [obj.mat,obj.aug];
+                separator = NaN(size(obj.mat, 1), 1);
+                oprStr = [obj.mat,separator,obj.aug];
             end
             
 
@@ -60,19 +61,17 @@ classdef MatOpsWrapper < handle
             obj.simp();
             
         end
-        function undo(obj,upto)
+        function opStr = undo(obj,upto)
             for index = 1:upto
                 if isempty(obj.ops)
                     break;
                 end
                 opr = obj.ops{end};
                 obj.ops(end) = [];
-                inv = opr.invert();
-                inv.apply(obj);
+                opStr = obj.operate(opr.invert());
                 obj.ops(end) = [];
                 if obj.aug == false
                 else
-                    inv.apply(obj.aug);
                     obj.aug.ops(end) = [];
                     obj.aug.ops(end) = [];
                 end
@@ -130,6 +129,13 @@ classdef MatOpsWrapper < handle
             oriMop.augment(eye(size(oriMop.mat,1)));
             oriMop.rref();
             mop = oriMop.aug;
+        end
+        function [l, u] = lu(obj)
+            mop = obj.freeze();
+            mop.delOps(length(mop.ops));
+            mop.ref();
+            l = mop.opsMop().invert();
+            u = mop;
         end
       
     end

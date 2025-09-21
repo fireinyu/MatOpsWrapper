@@ -44,6 +44,19 @@ Creates a new wrapper for the matrix `mat`.
 - `invert()`: Returns the inverse of the matrix as a `MatOpsWrapper` object.
 - `lu()`: Returns the LU decomposition as `[l, u]`, where `l` is the `MatOpsWrapper` object of the unit lower triangular matrix and `u` is the `MatOpsWrapper` object of the upper triangular matrix.
 
+### Column Operations
+- `subCol(colNum, with)`: Substitutes out a column from the matrix while updating the augmentation.
+
+	- Parameters:
+		- `colNum` (integer): Index of the column in the main matrix to remove (1-based).
+		- `with` : value to substitute with
+
+	- Returns
+		- `MatOpsWrapper` object with the given column substituted out
+
+	- Notes:
+		- The method expects the instance to be augmented (i.e., `aug` is a `MatOpsWrapper`) because it updates `aug.mat`. If `aug` is `false`, calling `subCol` will error.
+
 ## Example Usage
 
 ```matlab

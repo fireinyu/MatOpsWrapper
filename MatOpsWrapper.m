@@ -7,7 +7,7 @@ classdef MatOpsWrapper < handle
     
     methods
         function obj = MatOpsWrapper(mat)
-            obj.mat = mat;
+            obj.mat = sym(mat);
             obj.ops = {};
       
         end
@@ -32,8 +32,8 @@ classdef MatOpsWrapper < handle
                 oprStr = obj.mat;
             else
                 operation.apply(obj.aug);
-                separator = NaN(size(obj.mat, 1), 1);
-                oprStr = [obj.mat,separator,obj.aug];
+                %separator = NaN(size(obj.mat, 1), 1);
+                oprStr = obj.mat;
             end
             
 
@@ -137,7 +137,16 @@ classdef MatOpsWrapper < handle
             l = mop.opsMop().invert();
             u = mop;
         end
-      
+        function mop = subCol (obj, colNum, with)
+            mop = obj.freeze();
+            mt = mop.mat;
+            ag = mop.aug.mat;
+            scalars = mt(:,colNum);
+            mt(:,colNum) = [];
+            ag = ag - scalars * with;
+            mop.mat = mt;
+            mop.aug.mat = ag;
+        end
     end
 end
 

@@ -13,8 +13,9 @@ classdef MatOpsWrapper < handle
                 vars = false;
             end
             if (vars == false)
+                vars = [];
+                symvar
                 vars = symvar(seq);
-                disp(vars);
             end
             mat = zeros(size(seq,1)*size(seq,2),length(vars));
             rowNum = 0;

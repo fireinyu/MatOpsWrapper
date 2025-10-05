@@ -9,6 +9,11 @@ obj = MatOpsWrapper(mat)
 ```
 Creates a new wrapper for the matrix `mat`.
 
+## Static builders
+
+- `build(seq, vars)` — Create a `MatOpsWrapper` from a 2-D sequence of symbolic expressions. `vars` is optional; if omitted the method auto-detects symbolic variables. Returns a wrapper whose `mat` contains coefficients for each variable.
+
+
 ## Methods
 
 ### Display and State

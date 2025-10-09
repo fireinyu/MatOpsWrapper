@@ -13,10 +13,10 @@ classdef CompoundOperation
                     break
                 end
                 entryFound = false;
-                % try to find non-symbolic pivot first
+                %% try to find s
                 for rowNum = leadingRowNum:size(mat,1)
                     val = mat(rowNum,colNum);
-                    if val ~= 0 & isempty(symvar(val))
+                    if val ~= 0 && ~any(symvar(val))
                         if rowNum ~= leadingRowNum
                             mat([rowNum,leadingRowNum],:) = mat([leadingRowNum,rowNum],:);
                             oprs{end+1} = ElementaryOperation.makeRowSwap(rowNum,leadingRowNum);
@@ -25,11 +25,10 @@ classdef CompoundOperation
                         break
                     end
                 end
-                % no non-symbolic pivot found, try to look for a symbolic one
                 if ~entryFound
                     for rowNum = leadingRowNum:size(mat,1)
                         val = mat(rowNum,colNum);
-                        if val ~= 0
+                        if val ~= 0 && ~any(symvar(val))
                             if rowNum ~= leadingRowNum
                                 mat([rowNum,leadingRowNum],:) = mat([leadingRowNum,rowNum],:);
                                 oprs{end+1} = ElementaryOperation.makeRowSwap(rowNum,leadingRowNum);

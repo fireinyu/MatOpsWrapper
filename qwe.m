@@ -1,4 +1,4 @@
-classdef MatOpsWrapper < handle
+classdef qwe < handle
     properties
         mat
         ops
@@ -31,13 +31,13 @@ classdef MatOpsWrapper < handle
                     end
                 end
             end
-            obj = MatOpsWrapper(mat);
+            obj = qwe(mat);
         end
 
     end
     
     methods
-        function obj = MatOpsWrapper(mat)
+        function obj = qwe(mat)
             obj.mat = sym(mat);
             obj.ops = {};
       
@@ -107,9 +107,10 @@ classdef MatOpsWrapper < handle
                     obj.aug.ops(end) = [];
                 end
             end
+            obj.simp();
         end
         function augment(obj,mat)
-            obj.aug = MatOpsWrapper(mat);
+            obj.aug = qwe(mat);
             for index = 1:length(obj.ops)
                 obj.ops{index}.apply(obj.aug)
             end
@@ -124,7 +125,7 @@ classdef MatOpsWrapper < handle
             copyAug = obj.aug;
         end
         function copyObj = freeze(obj)
-            copyObj = MatOpsWrapper(obj.freezeMat());
+            copyObj = qwe(obj.freezeMat());
             copyObj.ops = obj.freezeOps();
             copyObj.aug = obj.freezeAug();
         end

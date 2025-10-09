@@ -14,6 +14,7 @@ classdef ElementaryOperation
             operation = ElementaryOperation(@opr,@opr,oprStr,oprStr);
         end
         function [operation] = makeRowAddition(r1,r2,scalar)
+            scalar = simplify(scalar);
             function opr(matWrap)
                 matWrap.mat(r1, :) = matWrap.mat(r1, :) + scalar * matWrap.mat(r2, :);
             end
@@ -25,6 +26,7 @@ classdef ElementaryOperation
             operation = ElementaryOperation(@opr, @inv, oprStr, invStr);
         end
         function [operation] = makeRowMultiplication(r1, scalar)
+            scalar = simplify(scalar);
             function opr(matWrap)
                 matWrap.mat(r1, :) = scalar * matWrap.mat(r1, :);
             end

@@ -33,6 +33,11 @@ classdef MatOpsWrapper < handle
             end
             obj = qwe(mat);
         end
+        function obj = vander(order,xArr)
+            mat = fliplr(vander(xArr));
+            mat = mat(:,1:order+1);
+            obj = qwe(mat);
+        end
 
     end
     
@@ -179,6 +184,27 @@ classdef MatOpsWrapper < handle
             mop.mat = mt;
             mop.aug.mat = ag;
         end
+        function mop = gram(obj)
+            %TODO: if not linearly independent, perform gram on pivots and
+            %append zeros for nonpivots
+            %TODO: normalise and display exact scalars
+            mop = obj.freeze();
+            mop.delOps(100);
+            m = mop.freezeMat();
+            ortho = m(:,1);
+            for i = 2:size(m,2)
+                pmat = (ortho'*ortho)^(-1)*ortho';
+                col = m(:,i);
+                x = pmat * col;
+                pcol = ortho * x;
+                ncol = col - pcol;
+                ortho = [ortho ncol];
+                
+            end
+            mop.mat = ortho;
+
+        end
+
     end
 end
 

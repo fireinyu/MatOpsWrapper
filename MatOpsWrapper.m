@@ -165,7 +165,16 @@ classdef MatOpsWrapper < handle
             oriMop.delOps(length(oriMop.ops));
             oriMop.augment(eye(size(oriMop.mat,1)));
             oriMop.rref();
-            mop = oriMop.aug;
+            if size(obj.mat,1) == size(obj.mat,2)
+                % total inverse
+                mop = oriMop.aug;
+            elseif size(obj.mat,1) < size(obj.mat,2)
+                % right inverse
+                mop = qwe([oriMop.aug.mat; zeros([size(obj.mat,2)-size(obj.mat,1),size(obj.mat,1)])]);
+            else
+                % left inverse
+                mop = qwe(oriMop.aug.mat(1:size(obj.mat,2),:));
+            end
         end
         function [l, u] = lu(obj)
             mop = obj.freeze();
@@ -185,9 +194,7 @@ classdef MatOpsWrapper < handle
             mop.aug.mat = ag;
         end
         function mop = gram(obj)
-            %TODO: if not linearly independent, perform gram on pivots and
-            %append zeros for nonpivots
-            %TODO: normalise and display exact scalars
+            %TODO: use in-built qr
             mop = obj.freeze();
             mop.delOps(100);
             m = mop.freezeMat();
@@ -204,6 +211,8 @@ classdef MatOpsWrapper < handle
             mop.mat = ortho;
 
         end
+        %TODO calculate fundamental spaces
+        %TODO exact svd
 
     end
 end

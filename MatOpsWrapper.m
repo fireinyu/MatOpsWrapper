@@ -33,9 +33,9 @@ classdef MatOpsWrapper < handle
             end
             obj = qwe(mat);
         end
-        function obj = vander(order,xArr)
+        function obj = vander(degree,xArr)
             mat = fliplr(vander(xArr));
-            mat = mat(:,1:order+1);
+            mat = mat(:,1:degree+1);
             obj = qwe(mat);
         end
 
@@ -208,7 +208,8 @@ classdef MatOpsWrapper < handle
                 ortho = [ortho ncol];
                 
             end
-            mop.mat = ortho;
+            [q r] = qr(ortho,"econ");
+            mop.mat = simplify(q);
 
         end
         %TODO calculate fundamental spaces

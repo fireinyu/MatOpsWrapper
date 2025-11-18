@@ -49,5 +49,12 @@ classdef qwe < MatOpsWrapper
             obj.delOps(upto);
         end
 
+        function obj = uu(this, other)
+            obj = this.union(other);
+        end
+
+        function obj = nn(this, other)
+            obj = this.intersect(other);
+        end
     end
 end

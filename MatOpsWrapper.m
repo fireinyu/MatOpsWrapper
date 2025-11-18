@@ -6,7 +6,7 @@ classdef MatOpsWrapper < handle
     end
 
     methods (Static)
-
+        
         function obj = build(seq,vars)
             arguments
                 seq
@@ -248,6 +248,14 @@ classdef MatOpsWrapper < handle
 
         function obj = null(this)
             obj = qwe(transpose(this.mat)).lnull();
+        end
+
+        function obj = union(this, other)
+            obj = qwe([this.mat other.mat]).col();
+        end
+
+        function obj = intersect(this, other)
+            obj = qwe([this.lnull().mat other.lnull().mat]).lnull();
         end
         %TODO intersection and sum of subspace
         %TODO exact svd

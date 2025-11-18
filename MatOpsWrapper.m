@@ -47,6 +47,22 @@ classdef MatOpsWrapper < handle
             obj.ops = {};
       
         end
+        function pivArr = pivots(obj)
+            copyObj = obj.freeze();
+            copyObj.rref();
+            m = copyObj.mat;
+            numRows = size(m,1);
+            numCols = size(m,2);
+            pivArr = [];
+            for rowNum = 1:numRows
+                for colNum = 1:numCols
+                    if m(rowNum, colNum) ~= 0
+                        pivArr = [pivArr colNum];
+                        break;
+                    end
+                end
+            end
+        end
 
         function show(obj)
             if obj.aug == false
@@ -212,7 +228,28 @@ classdef MatOpsWrapper < handle
             mop.mat = simplify(q);
 
         end
-        %TODO calculate fundamental spaces
+        
+        function obj = col(this)
+            pivs = this.pivots();
+            obj = qwe(this.mat(:,pivs));
+        end
+
+        function obj = lnull(this)
+            rank = length(this.pivots());
+            copyObj = this.freeze();
+            copyObj.au(eye(size(this.mat,1)));
+            copyObj.rr();
+            obj = qwe(transpose(copyObj.aug.mat(rank+1:size(this.mat,1),:)));
+        end
+
+        function obj = row(this)
+            obj = qwe(transpose(this.mat)).col();
+        end
+
+        function obj = null(this)
+            obj = qwe(transpose(this.mat)).lnull();
+        end
+        %TODO intersection and sum of subspace
         %TODO exact svd
 
     end

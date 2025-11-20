@@ -48,7 +48,7 @@ classdef MatOpsWrapper < handle
       
         end
         function pivArr = pivots(obj)
-            copyObj = obj.freeze();
+            copyObj = qwe(obj.mat)
             copyObj.rref();
             m = copyObj.mat;
             numRows = size(m,1);
@@ -211,16 +211,16 @@ classdef MatOpsWrapper < handle
         end
         function mop = gram(obj)
             %TODO: use in-built qr
-            mop = obj.freeze();
-            mop.delOps(100);
-            m = mop.freezeMat();
+            mop = qwe(obj.mat);
+            mop.simp();
+            m = mop.mat;
             ortho = m(:,1);
             for i = 2:size(m,2)
                 pmat = (ortho'*ortho)^(-1)*ortho';
                 col = m(:,i);
                 x = pmat * col;
                 pcol = ortho * x;
-                ncol = col - pcol;
+                ncol = simplify(col - pcol);
                 ortho = [ortho ncol];
                 
             end
@@ -230,24 +230,28 @@ classdef MatOpsWrapper < handle
         end
         
         function obj = col(this)
-            pivs = this.pivots();
-            obj = qwe(this.mat(:,pivs));
+            obj = qwe(colspace(this.mat));
+            % pivs = this.pivots();
+            % obj = qwe(this.mat(:,pivs));
         end
 
         function obj = lnull(this)
-            rank = length(this.pivots());
-            copyObj = this.freeze();
-            copyObj.au(eye(size(this.mat,1)));
-            copyObj.rr();
-            obj = qwe(transpose(copyObj.aug.mat(rank+1:size(this.mat,1),:)));
+            obj = qwe(null(this.mat'));
+            % rank = length(this.pivots());
+            % copyObj = this.freeze();
+            % copyObj.au(eye(size(this.mat,1)));
+            % copyObj.rr();
+            % obj = qwe(transpose(copyObj.aug.mat(rank+1:size(this.mat,1),:)));
         end
 
         function obj = row(this)
-            obj = qwe(transpose(this.mat)).col();
+            obj = qwe(colspace(this.mat'));
+            % obj = qwe(transpose(this.mat)).col();
         end
 
         function obj = null(this)
-            obj = qwe(transpose(this.mat)).lnull();
+            obj = qwe(null(this.mat));
+            % obj = qwe(transpose(this.mat)).lnull();
         end
 
         function obj = union(this, other)
@@ -257,7 +261,39 @@ classdef MatOpsWrapper < handle
         function obj = intersect(this, other)
             obj = qwe([this.lnull().mat other.lnull().mat]).lnull();
         end
-        %TODO intersection and sum of subspace
+
+        function [u, s, v] = svd(this)
+            ata = this.mat' * this.mat;
+            syms x;
+            eigenvalues = sort(solve(det(x*eye(size(ata,1))-ata)),"descend");
+            s = sym(zeros(size(this.mat,1),size(this.mat,2)));
+            v = sym([]);
+            seen = [];
+            
+            for i = 1:size(eigenvalues,1)
+                if (eigenvalues(i)) ~= 0
+                    s(i,i) = sqrt(eigenvalues(i));
+                end
+                if any(seen == eigenvalues(i))
+                    continue
+                end
+                seen = [seen eigenvalues(i)];
+                v = [v qwe(ata-eigenvalues(i)*eye(size(ata,1))).null().mat];
+            end
+            s = qwe(s);
+            v = qwe(v).gram();
+            u = sym([]);
+            av = this.mat*v.mat;
+            for i = 1:min(size(s.mat,1),size(s.mat,2))
+                sigma = s.mat(i,i);
+                if sigma == 0
+                    break
+                end
+                u = simplify([u av(:,i)/sigma]);
+            end
+            u = qwe(u);
+            u = qwe([u.mat u.lnull().mat]).gram();
+        end
         %TODO exact svd
 
     end

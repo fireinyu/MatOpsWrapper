@@ -27,6 +27,7 @@ classdef ElementaryOperation
         end
         function [operation] = makeRowMultiplication(r1, scalar)
             scalar = simplify(sym(scalar));
+            % TODO: fix division by zero error when simplify enabled
             function opr(matWrap)
                 matWrap.mat(r1, :) = scalar * matWrap.mat(r1, :);
             end
